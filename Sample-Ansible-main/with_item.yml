@@ -1,0 +1,13 @@
+---
+- hosts: webservers
+  become: true
+  tasks:
+  - name: Create multiple directories
+    file: path={{item}} state=directory
+    with_items:
+    - '/home/dir1'
+    - '/home/dir2'
+    - '/home/dir3'
+    - '/home/folder-1'
+    - '/home/folder-2'
+    - '/home/folder-3'  

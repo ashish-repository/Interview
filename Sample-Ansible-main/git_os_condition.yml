@@ -1,0 +1,19 @@
+---
+- name: Install package depending on OS
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Install Git on Ubuntu/Debian
+      apt:
+        name: git
+        state: present
+        update_cache: true
+      when: ansible_facts['os_family'] == "Debian"
+   
+    - name: Install Git on RHEL/CentOS/Amazon Linux
+      yum:
+        name: git
+        state: present
+      when: ansible_facts['os_family'] == "RedHat"
+

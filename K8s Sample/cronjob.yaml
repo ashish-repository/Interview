@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mycronjob
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: busybox:1.28
+            command:
+            - /bin/sh
+            - -c
+            - date; echo Hello from the Kubernetes cluster
+          restartPolicy: OnFailure
+
+
+# kubectl apply -f cronjob.yaml
+# kubectl get cronjob
+# kubectl get po
+# kubectl logs <pod_name>
+# kubectl delete cronjob --all 
+# kubectl delete pods --all
+# kubectl get pod

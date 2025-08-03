@@ -1,0 +1,8 @@
+FROM alpine:latest
+
+# Copy entrypoint script
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Set ENTRYPOINT (allows CMD args to be passed)
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

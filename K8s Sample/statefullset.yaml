@@ -1,0 +1,102 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  selector:
+    matchLabels:
+      app: myapp
+  serviceName: nginx-svc
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp
+          image: registry.k8s.io/nginx-slim:0.8
+          ports:
+            - containerPort: 80
+              name: web
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+spec:
+  type: LoadBalancer
+  selector:
+    app: myapp
+  ports:
+    - port: 80
+      targetPort: 80
+---
+# kubectl apply -f ststefullset.yaml
+# kubectl get pods
+# kubectl get svc
+# kubectl expose service nginx-svc --type=LoadBalancer --port=80 --name=nginx-svc-exp  (this use in cmdline)
+# nginx is not a stateful object all database related object are Stateful.
+
+
+################## This is for mongodb ##############################
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  ports: 
+    - port:
+      targetPort: 27017 (3306)
+  clusterIP: None
+  selector:
+    role: mongo
+
+---    
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+spec:
+  selector:
+    matchLabels:
+      role: mongo
+  serviceName: "mongo"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        role: mongo
+    spec:
+      terminationGrace Period Seconds: 10
+        containers:
+        - name: mongo
+          image: mongo
+          ports:
+          - containerPort: 27017
+
+          env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            value: devdb
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            value: devdb@123
+          volumeMounts:
+          - name: mongo-persistent-storage
+            mountPath: /data/db
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-persistent-storage
+    spec:
+      accessModes: ["ReadWrite Once"]
+      resources:
+        requests:
+          storage: 1Gi  
+
+
+
+                
