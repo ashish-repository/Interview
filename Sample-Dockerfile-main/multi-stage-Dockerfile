@@ -1,0 +1,28 @@
+# ----------- Stage 1: Build the application -----------
+FROM node:18-alpine AS build
+
+WORKDIR /app
+
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy source code and build
+COPY . .
+RUN npm run build  # Assumes you have a build script
+
+# ----------- Stage 2: Run the application -----------
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy only the built files from the previous stage
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package*.json ./
+
+# Install only production dependencies
+RUN npm install --only=production
+
+EXPOSE 3000
+
+CMD ["node", "dist/index.js"]
